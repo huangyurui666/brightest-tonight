@@ -1,4 +1,4 @@
-# Design QA — Brightest Tonight
+# Design QA — The Brightest Stars Above You
 
 ## Comparison target
 
@@ -6,31 +6,31 @@
 - Source pixels: `941 × 1671`.
 - Rendered implementation: `http://127.0.0.1:4173/?demo=1`.
 - Combined comparison surface: `http://127.0.0.1:4173/qa.html`.
-- Browser-rendered evidence: Codex in-app browser capture of the combined comparison page and the 1:1 mobile preview.
-- Browser viewport for 1:1 check: `1400 × 1200`.
-- App screen CSS size: `393 × 852`.
+- Browser-rendered evidence: Codex in-app browser captures of the source comparison, the full-screen mobile implementation, and the desktop implementation.
+- Mobile viewport: `393 × 852`.
+- Desktop viewport: `1440 × 1000`.
 - Device pixel ratio: `1` during the 1:1 check.
-- State: iPhone, dark mode, Los Angeles demo GPS recognized, local date/time, results screen.
-- Density normalization: the source has a non-standard `0.563` aspect ratio, while the protected iPhone runtime is `393 × 852`; the combined QA surface used equal-height visual normalization, followed by a separate 1:1 app-screen inspection.
+- State: responsive web, dark mode, Los Angeles sample location, local date/time, results screen.
+- Responsive normalization: the source establishes the mobile visual language. The implementation keeps that hierarchy at `393 × 852`, then expands it into a true two-column desktop canvas at `1440 × 1000`.
 
 ## Full-view comparison evidence
 
-The combined `qa.html` surface displayed the source and live implementation side by side. The implementation preserves the source hierarchy: privacy-safe location and GPS state, centered title/time, observation-condition pill, semicircular sky panel, ranked glass cards, and fixed bottom controls. The protected phone frame is template-owned infrastructure and is excluded from fidelity findings.
+The combined `qa.html` surface displayed the source and live implementation side by side. The implementation preserves the source hierarchy: privacy-safe location and GPS state, poetic title/time, observation-condition pill, semicircular sky panel, ranked glass cards, and fixed bottom controls. The public experience no longer exposes device chrome: the browser viewport is the product canvas on both mobile and desktop.
 
 ## Focused-region evidence
 
-- Header: location, GPS badge, title, time, and observation conditions remain legible and aligned at 1:1.
+- Header: location, GPS badge, English title, poetic supporting line, time, and observation conditions remain legible and aligned.
 - Sky panel: star points, highlighted primary star, zenith guide, east/west labels, mountains, palms, and city horizon are visible.
 - Results: rank, bilingual star name, direction, altitude, visibility, magnitude, and the primary-star message are readable.
 - Personal fortune sheet: dark visual treatment, month/day input, locally computed zodiac, primary-star link, disclaimer, and reset action were browser-tested.
 
 ## Required fidelity surfaces
 
-- Fonts and typography: passed. System Chinese sans-serif matches the reference's clean consumer-product style; hierarchy and small-label optical weights remain readable.
-- Spacing and layout rhythm: passed. Major section order, centered hero, rounded condition pill, sky arc, card spacing, and fixed controls match the selected design. The protected mobile runtime makes the visible list slightly denser than the source, classified as P3.
+- Fonts and typography: passed. A high-contrast serif gives the English product name a more poetic voice; Chinese utility and astronomy content stays in a clear system sans-serif.
+- Spacing and layout rhythm: passed. Mobile uses a centered single-column flow. Desktop uses a `517.8px / 607.8px` two-column grid with the title and sky on the left and ranked results on the right.
 - Colors and visual tokens: passed. Near-black navy, deep blue glass surfaces, icy blue utility text, green success states, and warm gold star accents match the source direction.
 - Image quality and asset fidelity: passed. The generated Los Angeles night-sky asset is sharp, correctly cropped, and reused in the sky panel. Radix icons replace UI glyphs; no placeholder imagery remains.
-- Copy and content: passed. Core Chinese copy matches the selected design, with intentional additions for real-time data, scientific caveats, and the user-requested entertainment layer.
+- Copy and content: passed. The main title is `The Brightest Stars Above You`; the supporting line is `Tonight, the sky meets you where you are.` Core Chinese astronomy content and entertainment disclaimers remain intact.
 
 ## Comparison history
 
@@ -46,12 +46,16 @@ The combined `qa.html` surface displayed the source and live implementation side
 - Manual location: selecting Beijing changed the location badge, local date/time, weather state, and stellar positions.
 - Birthday flow: selecting September 23 produced Libra after the boundary mapping fix.
 - Browser console: no errors or warnings in the final checked state.
+- Mobile responsive check: the app canvas measured exactly `393 × 852`; device bezel display was `none`; no horizontal overflow.
+- Desktop responsive check: the app canvas measured exactly `1440 × 1000`; the experience resolved to two columns; no horizontal overflow.
 - Runtime integrity: `npm run check:runtime` passed.
 - Production build: `npm run build` passed.
 
-## Follow-up polish
+### Iteration 2
 
-- `[P3]` The protected device frame and standard iPhone aspect ratio show fewer cards above the fold than the taller source mock. Scrolling remains obvious and the primary task is unaffected.
+- Finding: `[P1]` The prior public desktop experience displayed the product inside a centered phone frame rather than using the web canvas.
+- Fix: hid device bezel, camera, status chrome, model picker, and simulated keyboard; expanded the app surface to the full viewport; added responsive single-column and two-column layouts.
+- Post-fix evidence: `393 × 852` and `1440 × 1000` browser captures both show full-viewport product UI without phone chrome.
 
 ## Final result
 

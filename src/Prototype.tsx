@@ -197,7 +197,7 @@ export default function Prototype() {
   const [birthDay, setBirthDay] = useState("");
 
   useEffect(() => {
-    document.title = "今夜最亮星 · Brightest Tonight";
+    document.title = "The Brightest Stars Above You · Starlit Tonight";
     const timer = window.setInterval(() => setNow(new Date()), 60_000);
     return () => window.clearInterval(timer);
   }, []);
@@ -303,7 +303,7 @@ export default function Prototype() {
   return (
     <div className="star-app">
       <MobileScroll className="app-screen">
-        <main className="screen-content" data-testid="star-screen" aria-label="今夜最亮星结果">
+        <main className="screen-content" data-testid="star-screen" aria-label="The brightest stars above you tonight">
           <header className="topbar">
             <button className="place-button" onClick={() => setLocationOpen(true)} aria-label="选择观测地点">
               <DrawingPinFilledIcon /><span>{place.label}</span>
@@ -315,39 +315,43 @@ export default function Prototype() {
             <button className="icon-button" onClick={() => setLocationOpen(true)} aria-label="打开地点菜单"><HamburgerMenuIcon /></button>
           </header>
 
-          <section className="hero-copy">
-            <p className="eyebrow">BRIGHTEST TONIGHT</p>
-            <h1>今晚最亮的星</h1>
-            <p>{formatDate(observationDate, place.timeZone)} {formatTime(observationDate, place.timeZone)} · {modeLabel}</p>
-          </section>
+          <div className="experience-grid">
+            <div className="sky-column">
+              <section className="hero-copy">
+                <p className="eyebrow">STARLIT TONIGHT</p>
+                <h1>The Brightest Stars<br />Above You</h1>
+                <p className="poetic-line">Tonight, the sky meets you where you are.</p>
+                <p className="observation-time">{formatDate(observationDate, place.timeZone)} {formatTime(observationDate, place.timeZone)} · {modeLabel}</p>
+              </section>
 
-          <section className="conditions" aria-label="观测条件">
-            <MoonIcon /><span>{cloudText}</span><span className="condition-divider" /><span>{moonText}</span>
-          </section>
+              <section className="conditions" aria-label="观测条件">
+                <MoonIcon /><span>{cloudText}</span><span className="condition-divider" /><span>{moonText}</span>
+              </section>
 
-          <section className="sky-panel" aria-label="天空方向示意">
-            <div className="zenith-line" />
-            <span className="zenith-label">天顶</span>
-            <span className="horizon-label west">西</span>
-            <span className="horizon-label east">东</span>
-            {stars.slice(0, 5).map((star, index) => {
-              const x = 8 + ((star.azimuth + 90) % 180) / 180 * 84;
-              const y = 78 - clamp(star.altitude, 5, 85) / 85 * 62;
-              return (
-                <button
-                  key={star.id}
-                  className={`sky-star sky-star-${star.color} ${index === 0 ? "is-primary" : ""}`}
-                  style={{ left: `${x}%`, top: `${y}%` }}
-                  onClick={() => setSelectedStar(star)}
-                  aria-label={`查看${star.nameZh}`}
-                >
-                  <StarFilledIcon />{index === 0 ? <span>{star.nameZh}</span> : null}
-                </button>
-              );
-            })}
-          </section>
+              <section className="sky-panel" aria-label="天空方向示意">
+                <div className="zenith-line" />
+                <span className="zenith-label">天顶</span>
+                <span className="horizon-label west">西</span>
+                <span className="horizon-label east">东</span>
+                {stars.slice(0, 5).map((star, index) => {
+                  const x = 8 + ((star.azimuth + 90) % 180) / 180 * 84;
+                  const y = 78 - clamp(star.altitude, 5, 85) / 85 * 62;
+                  return (
+                    <button
+                      key={star.id}
+                      className={`sky-star sky-star-${star.color} ${index === 0 ? "is-primary" : ""}`}
+                      style={{ left: `${x}%`, top: `${y}%` }}
+                      onClick={() => setSelectedStar(star)}
+                      aria-label={`查看${star.nameZh}`}
+                    >
+                      <StarFilledIcon />{index === 0 ? <span>{star.nameZh}</span> : null}
+                    </button>
+                  );
+                })}
+              </section>
+            </div>
 
-          <section className="results-section">
+            <section className="results-section">
             <div className="section-heading">
               <div><p className="section-kicker">按有效亮度排序</p><h2>现在最值得看的 {Math.min(stars.length, 5)} 颗</h2></div>
               <button className="method-link" onClick={() => setTimeOpen(true)}>换时间</button>
@@ -378,7 +382,8 @@ export default function Prototype() {
               <ChevronRightIcon />
             </button>
             <p className="mystic-note"><StarFilledIcon /> 星语和运势为娱乐性灵感，不属于天文学结论或现实预测。</p>
-          </section>
+            </section>
+          </div>
         </main>
       </MobileScroll>
 
