@@ -57,6 +57,12 @@ The combined `qa.html` surface displayed the source and live implementation side
 - Fix: hid device bezel, camera, status chrome, model picker, and simulated keyboard; expanded the app surface to the full viewport; added responsive single-column and two-column layouts.
 - Post-fix evidence: `393 × 852` and `1440 × 1000` browser captures both show full-viewport product UI without phone chrome.
 
+### Iteration 3
+
+- Finding: users could only inspect the ranked stars and a fixed city list; there was no direct way to ask about a named star or another city.
+- Fix: added a top-level bilingual star search, current-location brightness sheet, four quick cities, and global city-name search with coordinates and time zone.
+- Post-fix evidence: `Sirius` returned `天狼星`, then showed its below-horizon state at the active place and time; `Paris` returned multiple country-qualified city matches and selecting `巴黎 · 法兰西岛 · 法国` updated the page to Paris local time.
+
 ## Final result
 
 final result: passed

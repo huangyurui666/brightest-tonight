@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Body, DefineStar, Equator, Horizon, Illumination, Observer } from "astronomy-engine";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
   ClockIcon,
+  Cross2Icon,
   Crosshair2Icon,
   DrawingPinFilledIcon,
   HamburgerMenuIcon,
+  MagnifyingGlassIcon,
   MoonIcon,
   ReloadIcon,
   StarFilledIcon,
@@ -35,6 +37,16 @@ type Place = {
   timeZone: string;
 };
 
+type CitySearchResult = {
+  id: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  timezone: string;
+  country?: string;
+  admin1?: string;
+};
+
 type StarResult = CatalogStar & {
   altitude: number;
   azimuth: number;
@@ -52,11 +64,10 @@ type Zodiac = {
 };
 
 const PLACES: Place[] = [
+  { id: "shenzhen", label: "深圳附近", latitude: 22.5431, longitude: 114.0579, timeZone: "Asia/Shanghai" },
+  { id: "beijing", label: "北京附近", latitude: 39.9042, longitude: 116.4074, timeZone: "Asia/Shanghai" },
   { id: "los-angeles", label: "洛杉矶附近", latitude: 34.0522, longitude: -118.2437, timeZone: "America/Los_Angeles" },
   { id: "new-york", label: "纽约附近", latitude: 40.7128, longitude: -74.006, timeZone: "America/New_York" },
-  { id: "beijing", label: "北京附近", latitude: 39.9042, longitude: 116.4074, timeZone: "Asia/Shanghai" },
-  { id: "sydney", label: "悉尼附近", latitude: -33.8688, longitude: 151.2093, timeZone: "Australia/Sydney" },
-  { id: "singapore", label: "新加坡附近", latitude: 1.3521, longitude: 103.8198, timeZone: "Asia/Singapore" },
 ];
 
 const STAR_CATALOG: CatalogStar[] = [
@@ -130,27 +141,32 @@ function findTonight(date: Date, observer: Observer) {
   return { date: new Date(date.getTime() + 6 * 60 * 60_000), mode: "今晚" };
 }
 
-function calculateStars(date: Date, observer: Observer, cloudCover: number | null): StarResult[] {
+function calculateStar(star: CatalogStar, date: Date, observer: Observer, cloudCover: number | null): StarResult {
+  DefineStar(Body.Star1, star.ra, star.dec, star.distanceLy);
+  const eq = Equator(Body.Star1, date, observer, true, true);
+  const horizon = Horizon(date, observer, eq.ra, eq.dec, "normal");
+  const sinAlt = Math.sin((Math.max(horizon.altitude, 1) * Math.PI) / 180);
+  const airMass = 1 / (sinAlt + 0.50572 * Math.pow(Math.max(horizon.altitude, 1) + 6.07995, -1.6364));
+  const effectiveMagnitude = star.magnitude + 0.2 * Math.max(0, airMass - 1);
+  const cloudPenalty = cloudCover === null ? 5 : cloudCover * 0.23;
+  const score = horizon.altitude <= 3
+    ? 0
+    : clamp(98 - (effectiveMagnitude + 1.5) * 9 + Math.min(horizon.altitude, 70) * 0.2 - cloudPenalty, 8, 99);
   const dayKey = Math.floor(date.getTime() / 86_400_000);
-  return STAR_CATALOG.map((star) => {
-    DefineStar(Body.Star1, star.ra, star.dec, star.distanceLy);
-    const eq = Equator(Body.Star1, date, observer, true, true);
-    const horizon = Horizon(date, observer, eq.ra, eq.dec, "normal");
-    const sinAlt = Math.sin((Math.max(horizon.altitude, 1) * Math.PI) / 180);
-    const airMass = 1 / (sinAlt + 0.50572 * Math.pow(Math.max(horizon.altitude, 1) + 6.07995, -1.6364));
-    const effectiveMagnitude = star.magnitude + 0.2 * Math.max(0, airMass - 1);
-    const cloudPenalty = cloudCover === null ? 5 : cloudCover * 0.23;
-    const score = clamp(98 - (effectiveMagnitude + 1.5) * 9 + Math.min(horizon.altitude, 70) * 0.2 - cloudPenalty, 8, 99);
-    return {
-      ...star,
-      altitude: horizon.altitude,
-      azimuth: horizon.azimuth,
-      effectiveMagnitude,
-      score,
-      direction: getDirection(horizon.azimuth),
-      message: star.guidance[Math.abs(dayKey + star.id.length) % star.guidance.length],
-    };
-  })
+
+  return {
+    ...star,
+    altitude: horizon.altitude,
+    azimuth: horizon.azimuth,
+    effectiveMagnitude,
+    score,
+    direction: getDirection(horizon.azimuth),
+    message: star.guidance[Math.abs(dayKey + star.id.length) % star.guidance.length],
+  };
+}
+
+function calculateStars(date: Date, observer: Observer, cloudCover: number | null): StarResult[] {
+  return STAR_CATALOG.map((star) => calculateStar(star, date, observer, cloudCover))
     .filter((star) => star.altitude > 3)
     .sort((a, b) => {
       const aPenalty = a.altitude < 10 ? 1.2 : 0;
@@ -182,7 +198,7 @@ function getZodiac(month: number, day: number): Zodiac {
 
 export default function Prototype() {
   const demoMode = new URLSearchParams(window.location.search).get("demo") === "1";
-  const [place, setPlace] = useState<Place>(PLACES[0]);
+  const [place, setPlace] = useState<Place>(() => PLACES.find((item) => item.id === "los-angeles") ?? PLACES[0]);
   const [source, setSource] = useState<"sample" | "gps" | "manual">(demoMode ? "gps" : "sample");
   const [now, setNow] = useState(() => new Date());
   const [timeOffset, setTimeOffset] = useState(0);
@@ -193,6 +209,12 @@ export default function Prototype() {
   const [locationOpen, setLocationOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   const [horoscopeOpen, setHoroscopeOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [cityQuery, setCityQuery] = useState("");
+  const [cityResults, setCityResults] = useState<CitySearchResult[]>([]);
+  const [citySearching, setCitySearching] = useState(false);
+  const [cityError, setCityError] = useState("");
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
 
@@ -211,6 +233,13 @@ export default function Prototype() {
   const stars = useMemo(() => calculateStars(observationDate, observer, cloudCover), [observationDate, observer, cloudCover]);
   const moonLight = useMemo(() => Math.round(Illumination(Body.Moon, observationDate).phase_fraction * 100), [observationDate]);
   const personalZodiac = birthMonth && birthDay ? getZodiac(Number(birthMonth), Number(birthDay)) : null;
+  const searchMatches = useMemo(() => {
+    const query = searchTerm.trim().toLocaleLowerCase();
+    if (!query) return [];
+    return STAR_CATALOG.filter((star) =>
+      [star.nameZh, star.nameEn, star.constellation, star.id].some((value) => value.toLocaleLowerCase().includes(query)),
+    ).slice(0, 6);
+  }, [searchTerm]);
   const primaryStar = stars[0] ?? null;
   const personalAdvice = useMemo(() => {
     if (!personalZodiac || !primaryStar) return "";
@@ -290,9 +319,54 @@ export default function Prototype() {
     setLocationOpen(false);
   };
 
+  const searchCities = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const query = cityQuery.trim();
+    if (query.length < 2) {
+      setCityError("请输入至少 2 个字符的城市名。");
+      setCityResults([]);
+      return;
+    }
+
+    setCitySearching(true);
+    setCityError("");
+    try {
+      const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=zh&format=json`);
+      if (!response.ok) throw new Error("city search unavailable");
+      const data = await response.json();
+      const results = Array.isArray(data.results) ? data.results as CitySearchResult[] : [];
+      setCityResults(results);
+      if (!results.length) setCityError("没有找到匹配城市，请尝试加入国家或省州名称。");
+    } catch {
+      setCityResults([]);
+      setCityError("城市搜索暂时不可用，请稍后重试或选择快捷城市。");
+    } finally {
+      setCitySearching(false);
+    }
+  };
+
+  const chooseSearchedCity = (city: CitySearchResult) => {
+    choosePlace({
+      id: `city-${city.id}`,
+      label: `${city.name}附近`,
+      latitude: city.latitude,
+      longitude: city.longitude,
+      timeZone: city.timezone,
+    });
+    setCityQuery("");
+    setCityResults([]);
+    setCityError("");
+  };
+
   const openHoroscope = () => {
     setSelectedStar(null);
     window.setTimeout(() => setHoroscopeOpen(true), 130);
+  };
+
+  const openSearchedStar = (star: CatalogStar) => {
+    setSearchTerm(`${star.nameZh} · ${star.nameEn}`);
+    setSearchOpen(false);
+    setSelectedStar(calculateStar(star, observationDate, observer, cloudCover));
   };
 
   const cloudText = cloudCover === null ? "云量未知" : cloudCover < 25 ? "天空晴朗" : cloudCover < 65 ? "有少量云" : "云层较多";
@@ -314,6 +388,33 @@ export default function Prototype() {
             </span>
             <button className="icon-button" onClick={() => setLocationOpen(true)} aria-label="打开地点菜单"><HamburgerMenuIcon /></button>
           </header>
+
+          <div className="star-search" role="search">
+            <MagnifyingGlassIcon aria-hidden="true" />
+            <input
+              aria-label="搜索星星名字"
+              autoComplete="off"
+              placeholder="搜索星星，如 Sirius / 天狼星"
+              value={searchTerm}
+              onChange={(event) => { setSearchTerm(event.target.value); setSearchOpen(true); }}
+              onFocus={() => setSearchOpen(true)}
+            />
+            {searchTerm ? (
+              <button className="search-clear" aria-label="清除搜索" onClick={() => { setSearchTerm(""); setSearchOpen(false); }}><Cross2Icon /></button>
+            ) : <span className="search-hint">当前位置 · 当前时间</span>}
+            {searchOpen && searchTerm.trim() ? (
+              <div className="search-results" aria-label="星星搜索结果">
+                {searchMatches.length ? searchMatches.map((star) => (
+                  <button key={star.id} onPointerDown={(event) => event.preventDefault()} onClick={() => openSearchedStar(star)}>
+                    <span className={`search-star-icon star-${star.color}`}><StarFilledIcon /></span>
+                    <span><strong>{star.nameZh}</strong><small>{star.nameEn} · {star.constellation}</small></span>
+                    <span className="catalog-magnitude">视星等 {star.magnitude.toFixed(2)}</span>
+                    <ChevronRightIcon />
+                  </button>
+                )) : <p className="search-empty">暂未收录这颗星，试试中英文名称。</p>}
+              </div>
+            ) : null}
+          </div>
 
           <div className="experience-grid">
             <div className="sky-column">
@@ -397,7 +498,24 @@ export default function Prototype() {
         <div className="sheet-actions">
           <button className="primary-sheet-button" onClick={locate} disabled={isLocating}><Crosshair2Icon /> {isLocating ? "正在识别位置…" : "使用我的当前位置"}</button>
           {locationMessage ? <p className="location-message">{locationMessage}</p> : null}
-          <p className="sheet-label">或选择城市</p>
+          <p className="sheet-label">搜索具体城市</p>
+          <form className="city-search-form" onSubmit={searchCities}>
+            <MagnifyingGlassIcon />
+            <input aria-label="搜索城市" autoComplete="off" placeholder="例如：深圳、Paris、Cambridge" value={cityQuery} onChange={(event) => setCityQuery(event.target.value)} />
+            <button type="submit" disabled={citySearching}>{citySearching ? <ReloadIcon className="spin" /> : "搜索"}</button>
+          </form>
+          {cityError ? <p className="city-search-message">{cityError}</p> : null}
+          {cityResults.length ? (
+            <div className="city-search-results">
+              {cityResults.map((city) => (
+                <button key={city.id} onClick={() => chooseSearchedCity(city)}>
+                  <span><strong>{city.name}</strong><small>{[city.admin1, city.country].filter(Boolean).join(" · ")}</small></span>
+                  <ChevronRightIcon />
+                </button>
+              ))}
+            </div>
+          ) : null}
+          <p className="sheet-label">快捷城市</p>
           <div className="city-grid">
             {PLACES.map((item) => <button key={item.id} onClick={() => choosePlace(item)} className={place.id === item.id ? "active" : ""}>{item.label.replace("附近", "")}</button>)}
           </div>
@@ -418,11 +536,16 @@ export default function Prototype() {
           <div className="star-detail">
             <div className="detail-orb"><StarFilledIcon /></div>
             <div className="detail-stats">
-              <span><small>方向</small>{selectedStar.direction} {Math.round(selectedStar.azimuth)}°</span>
+              <span><small>方向</small>{selectedStar.altitude > 3 ? `${selectedStar.direction} ${Math.round(selectedStar.azimuth)}°` : "地平线下"}</span>
               <span><small>高度</small>{Math.round(selectedStar.altitude)}°</span>
-              <span><small>视星等</small>{selectedStar.magnitude.toFixed(2)}</span>
+              <span><small>{selectedStar.altitude > 3 ? "有效星等" : "本征星等"}</small>{(selectedStar.altitude > 3 ? selectedStar.effectiveMagnitude : selectedStar.magnitude).toFixed(2)}</span>
             </div>
-            <section className="finding-card"><p>怎么找到它</p><strong>面向{selectedStar.direction}，从地平线向上约 {Math.max(1, Math.round(selectedStar.altitude / 10))} 个拳头。</strong><span>手臂伸直时，一个拳头约等于 10°。</span></section>
+            <section className={`brightness-card ${selectedStar.altitude <= 3 ? "is-below" : ""}`}>
+              <p>当前位置 · 当前时间的亮度</p>
+              <strong>{selectedStar.altitude > 3 ? `${visibilityLabel(selectedStar.score)} · ${Math.round(selectedStar.score)}/100` : "当前在地平线下，暂时不可见"}</strong>
+              <span>{selectedStar.altitude > 3 ? `已综合恒星视星等、大气衰减、高度与${cloudCover === null ? "默认云量" : `${cloudCover}% 云量`}。` : "它会随地球自转再次升起；可以稍后换时间查看。"}</span>
+            </section>
+            <section className="finding-card"><p>怎么找到它</p><strong>{selectedStar.altitude > 3 ? `面向${selectedStar.direction}，从地平线向上约 ${Math.max(1, Math.round(selectedStar.altitude / 10))} 个拳头。` : "这颗星当前不在可见天空中。"}</strong><span>{selectedStar.altitude > 3 ? "手臂伸直时，一个拳头约等于 10°。" : "使用底部时间控制，可以查看未来 4 小时是否升起。"}</span></section>
             <section className="meaning-card">
               <p><StarFilledIcon /> 今日星语 · 娱乐灵感</p><h3>{selectedStar.meaning}</h3><blockquote>“{selectedStar.message}”</blockquote><span>星语依据日期与恒星主题生成，不是科学预测。</span>
               <button className="learn-more-button" onClick={openHoroscope}>了解更多 · 看我的今日星运 <ChevronRightIcon /></button>
