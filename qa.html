@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Design QA · Brightest Tonight</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 12px; color: #eaf2ff; background: #07111f; font-family: system-ui, sans-serif; }
+      h1 { margin: 0 0 5px; font-size: 16px; }
+      p { margin: 0 0 10px; color: #8fa8c8; font-size: 9px; }
+      main { display: flex; gap: 10px; align-items: flex-start; }
+      figure { margin: 0; }
+      figcaption { margin-bottom: 5px; color: #aac2df; font-size: 9px; }
+      img { display: block; width: 275px; height: 489px; object-fit: cover; object-position: top; border: 1px solid #274463; border-radius: 12px; }
+      iframe { display: block; width: 275px; height: 489px; border: 1px solid #274463; border-radius: 12px; background: #07111f; }
+    </style>
+  </head>
+  <body>
+    <h1>今夜最亮星 · 视觉对照</h1>
+    <p>左：选定产品图；右：当前浏览器实现。参考图比例与模板设备比例不同，因此按等高方式检查布局、颜色、层级和内容。</p>
+    <main>
+      <figure><figcaption>Source visual</figcaption><img src="/assets/app/source-reference.png" alt="Source visual" /></figure>
+      <figure><figcaption>Rendered implementation</figcaption><iframe src="/?demo=1" title="Rendered implementation"></iframe></figure>
+    </main>
+  </body>
+</html>

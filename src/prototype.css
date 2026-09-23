@@ -1,0 +1,332 @@
+/* App-owned styles. The surrounding device runtime stays in styles.css. */
+
+:root {
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  color: #f5f8ff;
+  background: #06111f;
+}
+
+button,
+input,
+select { font: inherit; }
+
+button { -webkit-tap-highlight-color: transparent; }
+
+.star-app,
+.app-screen,
+.screen-content { min-height: 100%; }
+
+.star-app {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: #f7f9ff;
+  background: #071321 url("/assets/app/los-angeles-night-sky.png") center / cover no-repeat;
+}
+
+.star-app::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(3, 13, 28, 0.12) 0%, rgba(3, 13, 28, 0.58) 47%, rgba(3, 13, 28, 0.98) 82%);
+}
+
+.app-screen { position: relative; z-index: 1; background: transparent; }
+.screen-content { padding: 56px 16px 126px; }
+
+.topbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 34px;
+  gap: 8px;
+  align-items: center;
+}
+
+.place-button,
+.icon-button,
+.method-link {
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.place-button {
+  display: flex;
+  min-width: 0;
+  gap: 7px;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.place-button svg { width: 18px; height: 18px; color: #b7d6ff; flex: 0 0 auto; }
+.place-button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.gps-badge {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  padding: 7px 11px;
+  border: 1px solid rgba(155, 194, 240, 0.28);
+  border-radius: 999px;
+  color: #bdd5f5;
+  background: rgba(7, 24, 44, 0.58);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(14px);
+}
+
+.gps-badge.is-live { border-color: rgba(85, 232, 185, 0.35); color: #7ef0ca; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px currentColor; }
+.icon-button { display: grid; width: 34px; height: 34px; place-items: center; }
+.icon-button svg { width: 20px; height: 20px; }
+
+.hero-copy { padding: 28px 0 16px; text-align: center; }
+.hero-copy .eyebrow { margin: 0 0 7px; color: #7fb6ec; font-size: 9px; font-weight: 800; letter-spacing: 0.22em; }
+.hero-copy h1 { margin: 0; font-size: 33px; font-weight: 900; letter-spacing: -0.04em; text-shadow: 0 4px 28px rgba(0, 0, 0, 0.35); }
+.hero-copy > p:last-child { margin: 8px 0 0; color: #b6c9e7; font-size: 15px; letter-spacing: 0.02em; }
+
+.conditions {
+  display: flex;
+  width: fit-content;
+  gap: 9px;
+  align-items: center;
+  margin: 0 auto 18px;
+  padding: 10px 17px;
+  border: 1px solid rgba(126, 177, 229, 0.25);
+  border-radius: 999px;
+  color: #e0ebfb;
+  background: rgba(8, 28, 51, 0.54);
+  font-size: 12px;
+  backdrop-filter: blur(14px);
+}
+
+.conditions svg { width: 18px; height: 18px; color: #c6dcff; }
+.condition-divider { width: 3px; height: 3px; border-radius: 50%; background: #6f8bad; }
+
+.sky-panel {
+  position: relative;
+  height: 194px;
+  overflow: hidden;
+  border: 1px solid rgba(103, 166, 230, 0.52);
+  border-bottom: 0;
+  border-radius: 200px 200px 0 0;
+  background-image:
+    linear-gradient(180deg, rgba(8, 26, 49, 0.08), rgba(8, 26, 49, 0.36)),
+    url("/assets/app/los-angeles-night-sky.png");
+  background-position: center, center bottom;
+  background-size: cover, 100% auto;
+}
+
+.sky-panel::after { position: absolute; right: 0; bottom: 0; left: 0; height: 1px; content: ""; background: rgba(164, 197, 233, 0.28); }
+.zenith-line { position: absolute; top: 24px; bottom: 0; left: 50%; border-left: 1px dashed rgba(126, 180, 235, 0.31); }
+.zenith-label,
+.horizon-label { position: absolute; color: #d7e7fb; font-size: 11px; font-weight: 700; }
+.zenith-label { top: 9px; left: 50%; transform: translateX(-50%); }
+.horizon-label { bottom: 9px; }
+.horizon-label.west { left: 10px; }
+.horizon-label.east { right: 10px; }
+
+.sky-star {
+  position: absolute;
+  display: grid;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  place-items: center;
+  border: 0;
+  color: #d9e9ff;
+  background: transparent;
+  filter: drop-shadow(0 0 7px currentColor);
+  cursor: pointer;
+}
+
+.sky-star svg { width: 8px; height: 8px; }
+.sky-star-gold { color: #ffdb78; }
+.sky-star-blue { color: #9fcbff; }
+.sky-star-orange { color: #ffb77f; }
+.sky-star-white { color: #edf5ff; }
+.sky-star.is-primary svg { width: 16px; height: 16px; }
+.sky-star span { position: absolute; top: 21px; left: 12px; width: max-content; color: #ffdb78; font-size: 11px; font-weight: 800; text-shadow: 0 1px 8px #021020; }
+
+.results-section { padding-top: 22px; }
+.section-heading { display: flex; align-items: end; justify-content: space-between; margin-bottom: 12px; }
+.section-kicker { margin: 0 0 3px; color: #79a7d5; font-size: 9px; font-weight: 800; letter-spacing: 0.12em; }
+.section-heading h2 { margin: 0; font-size: 20px; font-weight: 850; }
+.method-link { padding: 6px 0; color: #91c9ff; font-size: 11px; }
+.star-list { display: grid; gap: 9px; }
+
+.star-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px 24px minmax(0, 1fr) auto 12px;
+  gap: 8px;
+  align-items: center;
+  min-height: 84px;
+  padding: 11px;
+  border: 1px solid rgba(87, 151, 216, 0.28);
+  border-radius: 15px;
+  color: #f4f8ff;
+  background: rgba(6, 24, 45, 0.76);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 12px 28px rgba(0, 0, 0, 0.12);
+  text-align: left;
+  backdrop-filter: blur(16px);
+  cursor: pointer;
+}
+
+.star-card:active { transform: scale(0.992); }
+.star-emblem { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid rgba(129, 182, 240, 0.24); border-radius: 12px; background: rgba(5, 18, 35, 0.68); }
+.star-emblem svg { width: 15px; height: 15px; filter: drop-shadow(0 0 8px currentColor); }
+.star-gold { color: #ffdc79; }
+.star-blue { color: #a7cdff; }
+.star-white { color: #f0f7ff; }
+.star-orange { color: #ffb27c; }
+
+.rank-number { display: grid; width: 23px; height: 23px; place-items: center; border: 1px solid rgba(255, 224, 139, 0.5); border-radius: 50%; color: #ffe291; font-size: 11px; font-weight: 800; background: rgba(255, 210, 90, 0.12); }
+.star-main { display: grid; min-width: 0; gap: 4px; }
+.star-name-row { display: flex; min-width: 0; gap: 7px; align-items: baseline; }
+.star-name-row strong { flex: 0 0 auto; font-size: 16px; font-weight: 850; }
+.star-name-row span { overflow: hidden; color: #aac0df; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.star-position { color: #bdd0eb; font-size: 11px; }
+.star-whisper { display: flex; gap: 4px; align-items: center; overflow: hidden; color: #d8c49d; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.star-whisper svg { width: 8px; height: 8px; }
+.star-meta { display: grid; gap: 7px; justify-items: end; color: #91a8c7; font-size: 9px; white-space: nowrap; }
+.visibility { padding: 5px 7px; border: 1px solid #3ac89e; border-radius: 999px; color: #76e8c5; font-size: 9px; background: rgba(24, 140, 113, 0.1); }
+.visibility.fair { border-color: #398dca; color: #82c9ff; }
+.chevron { color: #a8c8ef; }
+
+.personal-fortune-card {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 38px minmax(0, 1fr) 16px;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(224, 180, 99, 0.26);
+  border-radius: 15px;
+  color: #f7edda;
+  background: linear-gradient(135deg, rgba(74, 48, 69, 0.77), rgba(10, 41, 68, 0.78));
+  text-align: left;
+}
+
+.fortune-icon { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; color: #ffda83; background: rgba(255, 212, 117, 0.12); }
+.fortune-icon svg { filter: drop-shadow(0 0 8px currentColor); }
+.personal-fortune-card > span:nth-child(2) { display: grid; gap: 2px; }
+.personal-fortune-card small { color: #c9aa75; font-size: 9px; font-weight: 800; letter-spacing: 0.08em; }
+.personal-fortune-card strong { font-size: 12px; line-height: 1.4; }
+.personal-fortune-card > svg { color: #d9bd87; }
+.mystic-note { display: flex; gap: 6px; align-items: flex-start; margin: 10px 2px 0; color: #8299b9; font-size: 9px; line-height: 1.45; }
+.mystic-note svg { width: 9px; height: 9px; margin-top: 2px; flex: 0 0 auto; }
+
+.bottom-controls {
+  position: absolute;
+  z-index: 10;
+  right: 12px;
+  bottom: 16px;
+  left: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 6px;
+  align-items: center;
+  min-height: 72px;
+  padding: 8px;
+  border: 1px solid rgba(98, 157, 219, 0.34);
+  border-radius: 24px;
+  background: rgba(7, 29, 54, 0.92);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(22px);
+}
+
+.bottom-controls button { display: flex; height: 54px; gap: 9px; align-items: center; justify-content: center; padding: 0 9px; border: 0; color: #edf5ff; background: transparent; cursor: pointer; }
+.bottom-controls button:disabled { opacity: 0.65; }
+.bottom-controls svg { width: 20px; height: 20px; color: #bddcff; }
+.bottom-controls button > span { display: flex; gap: 5px; align-items: baseline; font-size: 13px; font-weight: 750; }
+.bottom-controls small { color: #a9bdd9; font-size: 9px; }
+.bottom-divider { width: 1px; height: 30px; background: rgba(141, 178, 218, 0.24); }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.bottom-sheet { color: #edf5ff; border: 1px solid rgba(109, 162, 219, 0.3); border-bottom: 0; background: #0b1a2d; box-shadow: 0 -20px 70px rgba(0, 0, 0, 0.48); }
+.sheet-overlay { background: rgba(1, 8, 17, 0.64); backdrop-filter: blur(5px); }
+.sheet-handle { background: #607a9c; }
+.sheet-title { color: #f4f8ff; }
+.sheet-description { color: #8fa8c7; }
+
+.sheet-actions,
+.time-sheet,
+.star-detail,
+.horoscope-sheet { display: grid; gap: 14px; }
+
+.primary-sheet-button { display: flex; gap: 9px; align-items: center; justify-content: center; min-height: 50px; border: 1px solid rgba(81, 224, 180, 0.42); border-radius: 15px; color: #dffff4; background: rgba(30, 161, 124, 0.16); font-weight: 800; }
+.location-message { margin: -5px 0 0; color: #94b0d1; font-size: 11px; line-height: 1.45; }
+.sheet-label { margin: 1px 0 -4px; color: #7893b5; font-size: 10px; font-weight: 800; letter-spacing: 0.08em; }
+.city-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.city-grid button,
+.time-presets button { min-height: 40px; border: 1px solid rgba(116, 161, 211, 0.25); border-radius: 12px; color: #c8d8ec; background: rgba(18, 43, 72, 0.7); }
+.city-grid button.active,
+.time-presets button.active { border-color: #59cfa8; color: #8ff0d0; background: rgba(44, 168, 132, 0.14); }
+
+.time-sheet { justify-items: center; }
+.time-sheet > strong { font-size: 38px; line-height: 1; }
+.time-sheet > span { color: #90a7c3; font-size: 11px; }
+.time-sheet input[type="range"] { width: 100%; accent-color: #64d9b6; }
+.time-presets { display: grid; width: 100%; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+
+.detail-orb { display: grid; width: 70px; height: 70px; margin: 0 auto; place-items: center; border: 1px solid rgba(255, 220, 121, 0.32); border-radius: 50%; color: #ffdb78; background: radial-gradient(circle, rgba(255, 212, 99, 0.2), rgba(255, 212, 99, 0.02) 66%); box-shadow: 0 0 38px rgba(255, 213, 103, 0.16); }
+.detail-orb svg { width: 25px; height: 25px; filter: drop-shadow(0 0 11px currentColor); }
+.detail-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.detail-stats > span { display: grid; gap: 4px; padding: 10px; border: 1px solid rgba(101, 151, 205, 0.2); border-radius: 12px; background: rgba(16, 40, 68, 0.54); font-size: 12px; text-align: center; }
+.detail-stats small { color: #819ab8; font-size: 8px; }
+.finding-card,
+.meaning-card { padding: 14px; border: 1px solid rgba(98, 148, 204, 0.22); border-radius: 15px; background: rgba(13, 35, 60, 0.74); }
+.finding-card p,
+.meaning-card p { margin: 0 0 7px; color: #8fb1d6; font-size: 10px; font-weight: 800; }
+.finding-card strong { display: block; color: #eaf3ff; font-size: 13px; line-height: 1.55; }
+.finding-card span,
+.meaning-card > span { display: block; margin-top: 7px; color: #7f99b8; font-size: 9px; line-height: 1.45; }
+.meaning-card { border-color: rgba(216, 178, 103, 0.23); background: linear-gradient(135deg, rgba(67, 46, 62, 0.74), rgba(15, 40, 68, 0.72)); }
+.meaning-card p { display: flex; gap: 5px; align-items: center; color: #d6b877; }
+.meaning-card p svg { width: 10px; height: 10px; }
+.meaning-card h3 { margin: 0; font-size: 18px; }
+.meaning-card blockquote { margin: 8px 0 0; color: #f3dfb1; font-size: 14px; font-weight: 700; line-height: 1.55; }
+
+.learn-more-button { display: flex; width: 100%; align-items: center; justify-content: space-between; margin-top: 13px; padding: 11px 12px; border: 1px solid rgba(231, 192, 116, 0.28); border-radius: 12px; color: #ffe2a5; background: rgba(212, 164, 77, 0.1); font-size: 11px; font-weight: 800; }
+
+.birthday-intro { display: grid; justify-items: center; gap: 7px; padding: 12px 0 3px; text-align: center; }
+.birthday-intro > svg { width: 28px; height: 28px; color: #ffda83; filter: drop-shadow(0 0 12px currentColor); }
+.birthday-intro strong { font-size: 16px; }
+.birthday-intro span { color: #86a1c1; font-size: 10px; }
+.birthday-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.birthday-fields label { display: grid; gap: 7px; color: #89a1be; font-size: 10px; font-weight: 700; }
+.birthday-fields select { width: 100%; min-height: 46px; padding: 0 12px; border: 1px solid rgba(110, 158, 210, 0.3); border-radius: 12px; color: #eff6ff; background: #102a47; outline: 0; }
+.birthday-fields select:disabled { opacity: 0.45; }
+.privacy-inline { margin: 0; padding: 10px 12px; border-radius: 11px; color: #7f99b8; background: rgba(12, 35, 60, 0.52); font-size: 9px; line-height: 1.45; }
+
+.fortune-result { display: grid; gap: 12px; }
+.zodiac-heading { text-align: center; }
+.zodiac-heading > span { display: inline-block; padding: 4px 8px; border-radius: 999px; color: #d8b873; background: rgba(223, 181, 101, 0.11); font-size: 9px; font-weight: 800; }
+.zodiac-heading h3 { margin: 7px 0 1px; font-size: 27px; }
+.zodiac-heading p { margin: 0; color: #9eb4cf; font-size: 11px; }
+.fortune-hero { padding: 15px; border: 1px solid rgba(222, 180, 100, 0.24); border-radius: 15px; background: linear-gradient(135deg, rgba(73, 46, 70, 0.78), rgba(16, 42, 70, 0.78)); }
+.fortune-hero p { margin: 0 0 7px; color: #d9bb7b; font-size: 9px; font-weight: 800; }
+.fortune-hero blockquote { margin: 0; color: #fff0ca; font-size: 16px; font-weight: 850; line-height: 1.52; }
+.fortune-hero > span { display: block; margin-top: 8px; color: #9eabc0; font-size: 9px; line-height: 1.5; }
+.fortune-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.fortune-grid > span { display: grid; gap: 5px; padding: 11px; border: 1px solid rgba(103, 151, 202, 0.2); border-radius: 12px; background: rgba(15, 38, 65, 0.66); text-align: center; }
+.fortune-grid small { color: #7f99b8; font-size: 8px; }
+.fortune-grid strong { color: #ffdb83; font-size: 12px; }
+.fortune-disclaimer { margin: 0; color: #718baa; font-size: 8px; line-height: 1.45; }
+.reset-birthday { min-height: 38px; border: 0; color: #91bcea; background: transparent; font-size: 10px; }
+
+@media (max-width: 380px) {
+  .screen-content { padding-right: 13px; padding-left: 13px; }
+  .star-card { grid-template-columns: 40px 22px minmax(0, 1fr) 12px; }
+  .star-meta { display: none; }
+  .star-emblem { width: 40px; height: 40px; }
+}
