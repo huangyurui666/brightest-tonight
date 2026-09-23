@@ -63,6 +63,18 @@ The combined `qa.html` surface displayed the source and live implementation side
 - Fix: added a top-level bilingual star search, current-location brightness sheet, four quick cities, and global city-name search with coordinates and time zone.
 - Post-fix evidence: `Sirius` returned `天狼星`, then showed its below-horizon state at the active place and time; `Paris` returned multiple country-qualified city matches and selecting `巴黎 · 法兰西岛 · 法国` updated the page to Paris local time.
 
+### Iteration 4
+
+- Finding: the mobile bottom time/location dock appeared as an oversized floating pill on desktop, duplicated the top location entry and the results-section “换时间” action, and visually competed with the content.
+- Fix: hid the bottom dock at desktop widths (`≥ 900px`) and reduced obsolete desktop bottom padding; preserved the dock on mobile.
+- Post-fix evidence: the `1440 × 1000` capture has no bottom floating pill and keeps both desktop actions accessible elsewhere; the `393 × 852` capture still shows the compact mobile dock.
+
+### Iteration 5
+
+- Finding: the star-detail hero used a generic glowing star icon, so it did not help users recognize the selected star's constellation.
+- Fix: replaced the generic orb with the matching official IAU constellation chart, a bilingual constellation caption, visible source and license attribution, and an orb fallback for network failures.
+- Post-fix evidence: Vega rendered the Lyra chart; searching Sirius switched the chart source to `CMA.gif` and captioned it `大犬座 / Canis Major`.
+
 ## Final result
 
 final result: passed

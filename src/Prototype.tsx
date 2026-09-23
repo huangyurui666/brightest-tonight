@@ -110,6 +110,29 @@ const ZODIACS: Zodiac[] = [
   { name: "射手座", element: "火象", keyword: "探索", advice: ["更大的视角会改变答案", "为新鲜经验留出时间", "先出发，路径会逐渐显现"] },
 ];
 
+const CONSTELLATION_CHARTS: Record<string, { code: string; nameEn: string }> = {
+  大犬座: { code: "CMA", nameEn: "Canis Major" },
+  船底座: { code: "CAR", nameEn: "Carina" },
+  半人马座: { code: "CEN", nameEn: "Centaurus" },
+  牧夫座: { code: "BOO", nameEn: "Boötes" },
+  天琴座: { code: "LYR", nameEn: "Lyra" },
+  御夫座: { code: "AUR", nameEn: "Auriga" },
+  猎户座: { code: "ORI", nameEn: "Orion" },
+  小犬座: { code: "CMI", nameEn: "Canis Minor" },
+  波江座: { code: "ERI", nameEn: "Eridanus" },
+  天鹰座: { code: "AQL", nameEn: "Aquila" },
+  南十字座: { code: "CRU", nameEn: "Crux" },
+  金牛座: { code: "TAU", nameEn: "Taurus" },
+  室女座: { code: "VIR", nameEn: "Virgo" },
+  天蝎座: { code: "SCO", nameEn: "Scorpius" },
+  双子座: { code: "GEM", nameEn: "Gemini" },
+  南鱼座: { code: "PSA", nameEn: "Piscis Austrinus" },
+  天鹅座: { code: "CYG", nameEn: "Cygnus" },
+  狮子座: { code: "LEO", nameEn: "Leo" },
+  小熊座: { code: "UMI", nameEn: "Ursa Minor" },
+  大熊座: { code: "UMA", nameEn: "Ursa Major" },
+};
+
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
@@ -215,6 +238,7 @@ export default function Prototype() {
   const [cityResults, setCityResults] = useState<CitySearchResult[]>([]);
   const [citySearching, setCitySearching] = useState(false);
   const [cityError, setCityError] = useState("");
+  const [chartLoadFailed, setChartLoadFailed] = useState(false);
   const [birthMonth, setBirthMonth] = useState("");
   const [birthDay, setBirthDay] = useState("");
 
@@ -246,6 +270,11 @@ export default function Prototype() {
     const dayKey = Math.floor(observationDate.getTime() / 86_400_000);
     return personalZodiac.advice[Math.abs(dayKey + primaryStar.id.length + Number(birthDay)) % personalZodiac.advice.length];
   }, [personalZodiac, primaryStar, observationDate, birthDay]);
+  const constellationChart = selectedStar ? CONSTELLATION_CHARTS[selectedStar.constellation] : null;
+
+  useEffect(() => {
+    setChartLoadFailed(false);
+  }, [selectedStar?.constellation]);
 
   const loadWeather = useCallback(async (latitude: number, longitude: number, fallbackTimeZone: string) => {
     try {
@@ -534,7 +563,20 @@ export default function Prototype() {
       <BottomSheet open={Boolean(selectedStar)} onOpenChange={(open) => { if (!open) setSelectedStar(null); }} title={selectedStar ? `${selectedStar.nameZh} · ${selectedStar.nameEn}` : "恒星详情"} description={selectedStar ? `${selectedStar.constellation} · 距离地球约 ${selectedStar.distanceLy} 光年` : undefined} snap={0.76}>
         {selectedStar ? (
           <div className="star-detail">
-            <div className="detail-orb"><StarFilledIcon /></div>
+            {constellationChart && !chartLoadFailed ? (
+              <figure className="constellation-chart">
+                <img
+                  src={`https://iauarchive.eso.org/static/public/constellations/gif/${constellationChart.code}.gif`}
+                  alt={`${selectedStar.constellation}（${constellationChart.nameEn}）星图`}
+                  loading="lazy"
+                  onError={() => setChartLoadFailed(true)}
+                />
+                <figcaption>
+                  <span><strong>{selectedStar.constellation}</strong>{constellationChart.nameEn}</span>
+                  <a href="https://iauarchive.eso.org/public/themes/constellations/" target="_blank" rel="noreferrer">IAU / Sky &amp; Telescope · CC BY 4.0</a>
+                </figcaption>
+              </figure>
+            ) : <div className="detail-orb"><StarFilledIcon /></div>}
             <div className="detail-stats">
               <span><small>方向</small>{selectedStar.altitude > 3 ? `${selectedStar.direction} ${Math.round(selectedStar.azimuth)}°` : "地平线下"}</span>
               <span><small>高度</small>{Math.round(selectedStar.altitude)}°</span>
