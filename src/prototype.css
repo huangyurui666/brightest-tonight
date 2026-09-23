@@ -41,6 +41,8 @@
 .device-screen a,
 .device-screen [role="button"] { cursor: pointer !important; }
 
+.mobile-cursor { display: none !important; }
+
 .phone-bezel,
 .device-camera,
 .device-menu-bar,
