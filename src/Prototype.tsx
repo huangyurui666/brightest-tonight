@@ -459,15 +459,18 @@ export default function Prototype() {
                 {stars.slice(0, 5).map((star, index) => {
                   const x = 8 + ((star.azimuth + 90) % 180) / 180 * 84;
                   const y = 78 - clamp(star.altitude, 5, 85) / 85 * 62;
+                  const labelSide = x > 72 ? "label-left" : x < 28 ? "label-right" : index % 2 === 0 ? "label-right" : "label-left";
+                  const labelHeight = y > 58 ? "label-above" : "label-below";
                   return (
                     <button
                       key={star.id}
-                      className={`sky-star sky-star-${star.color} ${index === 0 ? "is-primary" : ""}`}
+                      className={`sky-star sky-star-${star.color} ${index === 0 ? "is-primary" : ""} ${labelSide} ${labelHeight}`}
                       style={{ left: `${x}%`, top: `${y}%` }}
                       onClick={() => setSelectedStar(star)}
                       aria-label={`查看${star.nameZh}`}
                     >
-                      <StarFilledIcon />{index === 0 ? <span>{star.nameZh}</span> : null}
+                      <StarFilledIcon />
+                      <span className="sky-star-label"><b>{index + 1}</b>{star.nameZh}</span>
                     </button>
                   );
                 })}

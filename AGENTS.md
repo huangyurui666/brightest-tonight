@@ -18,6 +18,7 @@ When implementing from a selected generated mock, treat that image as the source
 - Keep location and observation time as two compact controls at the upper left on both mobile and desktop. Do not restore the floating bottom time/location dock.
 - In star details, prefer the matching official IAU constellation chart over an abstract star orb. Keep source attribution visible and retain the orb only as an image-load fallback.
 - Keep the top bar and star search visually minimal. Do not show a location-source status pill or a redundant current-location/current-time hint inside the search field.
+- Always label all five ranked stars inside the sky diagram with their rank and Chinese name. Keep labels edge-aware and readable without covering the star point.
 
 ## Editing Boundary
 

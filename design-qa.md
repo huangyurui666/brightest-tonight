@@ -81,6 +81,12 @@ The combined `qa.html` surface displayed the source and live implementation side
 - Fix: consolidated place and observation time into two compact upper-left buttons; removed the bottom dock, location-source pill, and `当前位置 · 当前时间` search hint. GPS remains available inside the place sheet.
 - Post-fix evidence: mobile and desktop checks show the two top-left controls, an uncluttered search field, and no floating dock.
 
+### Iteration 7
+
+- Finding: the sky diagram plotted all five ranked stars but only named the brightest one, leaving the other four points ambiguous.
+- Fix: added rank-and-name labels to all five plotted stars, with automatic left/right and above/below placement near panel edges.
+- Post-fix evidence: mobile and desktop checks show five readable labels while every star point remains clickable.
+
 ## Final result
 
 final result: passed

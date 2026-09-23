@@ -267,7 +267,34 @@ button { -webkit-tap-highlight-color: transparent; }
 .sky-star-orange { color: #ffb77f; }
 .sky-star-white { color: #edf5ff; }
 .sky-star.is-primary svg { width: 16px; height: 16px; }
-.sky-star span { position: absolute; top: 21px; left: 12px; width: max-content; color: #ffdb78; font-size: 11px; font-weight: 800; text-shadow: 0 1px 8px #021020; }
+.sky-star-label {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  width: max-content;
+  max-width: 92px;
+  gap: 4px;
+  align-items: center;
+  padding: 3px 6px 3px 4px;
+  border: 1px solid rgba(180, 209, 240, 0.18);
+  border-radius: 999px;
+  color: #e9f3ff;
+  background: rgba(5, 19, 36, 0.74);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(8px);
+  font-size: 9px;
+  font-weight: 750;
+  line-height: 1;
+  text-shadow: 0 1px 7px #021020;
+  white-space: nowrap;
+}
+.sky-star-label b { display: grid; width: 14px; height: 14px; place-items: center; border-radius: 50%; color: #081523; background: #e9f3ff; font-size: 8px; }
+.sky-star.label-right .sky-star-label { left: 14px; }
+.sky-star.label-left .sky-star-label { right: 14px; }
+.sky-star.label-below .sky-star-label { top: 18px; }
+.sky-star.label-above .sky-star-label { bottom: 18px; }
+.sky-star.is-primary .sky-star-label { border-color: rgba(255, 219, 120, 0.38); color: #ffdf83; background: rgba(35, 28, 18, 0.82); font-size: 10px; }
+.sky-star.is-primary .sky-star-label b { background: #ffdf83; }
 
 .results-section { padding-top: 22px; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; margin-bottom: 12px; }
