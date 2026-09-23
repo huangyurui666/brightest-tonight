@@ -1,13 +1,11 @@
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { Body, DefineStar, Equator, Horizon, Illumination, Observer } from "astronomy-engine";
 import {
-  ChevronDownIcon,
   ChevronRightIcon,
   ClockIcon,
   Cross2Icon,
   Crosshair2Icon,
   DrawingPinFilledIcon,
-  HamburgerMenuIcon,
   MagnifyingGlassIcon,
   MoonIcon,
   ReloadIcon,
@@ -222,7 +220,6 @@ function getZodiac(month: number, day: number): Zodiac {
 export default function Prototype() {
   const demoMode = new URLSearchParams(window.location.search).get("demo") === "1";
   const [place, setPlace] = useState<Place>(() => PLACES.find((item) => item.id === "los-angeles") ?? PLACES[0]);
-  const [source, setSource] = useState<"sample" | "gps" | "manual">(demoMode ? "gps" : "sample");
   const [now, setNow] = useState(() => new Date());
   const [timeOffset, setTimeOffset] = useState(0);
   const [cloudCover, setCloudCover] = useState<number | null>(null);
@@ -316,7 +313,6 @@ export default function Prototype() {
           label: `${nearby.label.replace("附近", "")}附近`,
         };
         setPlace(precisePlace);
-        setSource("gps");
         setTimeOffset(0);
         setLocationMessage("位置识别完成。精确坐标只用于本次计算。");
         setIsLocating(false);
@@ -342,7 +338,6 @@ export default function Prototype() {
 
   const choosePlace = (nextPlace: Place) => {
     setPlace(nextPlace);
-    setSource("manual");
     setTimeOffset(0);
     setLocationMessage(`已按${nextPlace.label.replace("附近", "")}的天空计算。`);
     setLocationOpen(false);
@@ -408,14 +403,12 @@ export default function Prototype() {
       <MobileScroll className="app-screen">
         <main className="screen-content" data-testid="star-screen" aria-label="The brightest stars above you tonight">
           <header className="topbar">
-            <button className="place-button" onClick={() => setLocationOpen(true)} aria-label="选择观测地点">
+            <button className="topbar-control place-button" onClick={() => setLocationOpen(true)} aria-label="选择观测地点">
               <DrawingPinFilledIcon /><span>{place.label}</span>
             </button>
-            <span className={`gps-badge ${source === "gps" ? "is-live" : ""}`}>
-              <span className="status-dot" />
-              {source === "gps" ? "GPS 已识别" : source === "manual" ? "手动地点" : "示例位置"}
-            </span>
-            <button className="icon-button" onClick={() => setLocationOpen(true)} aria-label="打开地点菜单"><HamburgerMenuIcon /></button>
+            <button className="topbar-control time-button" onClick={() => setTimeOpen(true)} aria-label="选择观测时间">
+              <ClockIcon /><span><small>{modeLabel}</small>{formatTime(observationDate, place.timeZone)}</span>
+            </button>
           </header>
 
           <div className="star-search" role="search">
@@ -430,7 +423,7 @@ export default function Prototype() {
             />
             {searchTerm ? (
               <button className="search-clear" aria-label="清除搜索" onClick={() => { setSearchTerm(""); setSearchOpen(false); }}><Cross2Icon /></button>
-            ) : <span className="search-hint">当前位置 · 当前时间</span>}
+            ) : null}
             {searchOpen && searchTerm.trim() ? (
               <div className="search-results" aria-label="星星搜索结果">
                 {searchMatches.length ? searchMatches.map((star) => (
@@ -517,12 +510,6 @@ export default function Prototype() {
         </main>
       </MobileScroll>
 
-      <nav className="bottom-controls" aria-label="观测控制">
-        <button onClick={() => setTimeOpen(true)}><ClockIcon /><span><small>{modeLabel}</small>{formatTime(observationDate, place.timeZone)}</span><ChevronDownIcon /></button>
-        <span className="bottom-divider" />
-        <button onClick={locate} disabled={isLocating}>{isLocating ? <ReloadIcon className="spin" /> : <Crosshair2Icon />}<span>{isLocating ? "定位中" : source === "gps" ? "刷新位置" : "使用我的位置"}</span></button>
-      </nav>
-
       <BottomSheet open={locationOpen} onOpenChange={setLocationOpen} title="选择观测地点" description="GPS 精确坐标只在当前页面用于天文计算；天气请求使用约 11 公里的模糊坐标。" snap={0.58}>
         <div className="sheet-actions">
           <button className="primary-sheet-button" onClick={locate} disabled={isLocating}><Crosshair2Icon /> {isLocating ? "正在识别位置…" : "使用我的当前位置"}</button>
@@ -587,7 +574,7 @@ export default function Prototype() {
               <strong>{selectedStar.altitude > 3 ? `${visibilityLabel(selectedStar.score)} · ${Math.round(selectedStar.score)}/100` : "当前在地平线下，暂时不可见"}</strong>
               <span>{selectedStar.altitude > 3 ? `已综合恒星视星等、大气衰减、高度与${cloudCover === null ? "默认云量" : `${cloudCover}% 云量`}。` : "它会随地球自转再次升起；可以稍后换时间查看。"}</span>
             </section>
-            <section className="finding-card"><p>怎么找到它</p><strong>{selectedStar.altitude > 3 ? `面向${selectedStar.direction}，从地平线向上约 ${Math.max(1, Math.round(selectedStar.altitude / 10))} 个拳头。` : "这颗星当前不在可见天空中。"}</strong><span>{selectedStar.altitude > 3 ? "手臂伸直时，一个拳头约等于 10°。" : "使用底部时间控制，可以查看未来 4 小时是否升起。"}</span></section>
+            <section className="finding-card"><p>怎么找到它</p><strong>{selectedStar.altitude > 3 ? `面向${selectedStar.direction}，从地平线向上约 ${Math.max(1, Math.round(selectedStar.altitude / 10))} 个拳头。` : "这颗星当前不在可见天空中。"}</strong><span>{selectedStar.altitude > 3 ? "手臂伸直时，一个拳头约等于 10°。" : "使用顶部时间按钮，可以查看未来 4 小时是否升起。"}</span></section>
             <section className="meaning-card">
               <p><StarFilledIcon /> 今日星语 · 娱乐灵感</p><h3>{selectedStar.meaning}</h3><blockquote>“{selectedStar.message}”</blockquote><span>星语依据日期与恒星主题生成，不是科学预测。</span>
               <button className="learn-more-button" onClick={openHoroscope}>了解更多 · 看我的今日星运 <ChevronRightIcon /></button>

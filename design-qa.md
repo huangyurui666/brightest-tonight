@@ -15,11 +15,11 @@
 
 ## Full-view comparison evidence
 
-The combined `qa.html` surface displayed the source and live implementation side by side. The implementation preserves the source hierarchy: privacy-safe location and GPS state, poetic title/time, observation-condition pill, semicircular sky panel, ranked glass cards, and fixed bottom controls. The public experience no longer exposes device chrome: the browser viewport is the product canvas on both mobile and desktop.
+The combined `qa.html` surface displayed the source and live implementation side by side. The implementation preserves the source hierarchy: privacy-safe location, poetic title/time, observation-condition pill, semicircular sky panel, and ranked glass cards. Place and time now sit together as two compact top-left controls. The public experience no longer exposes device chrome: the browser viewport is the product canvas on both mobile and desktop.
 
 ## Focused-region evidence
 
-- Header: location, GPS badge, English title, poetic supporting line, time, and observation conditions remain legible and aligned.
+- Header: the location and time controls, English title, poetic supporting line, and observation conditions remain legible and aligned.
 - Sky panel: star points, highlighted primary star, zenith guide, east/west labels, mountains, palms, and city horizon are visible.
 - Results: rank, bilingual star name, direction, altitude, visibility, magnitude, and the primary-star message are readable.
 - Personal fortune sheet: dark visual treatment, month/day input, locally computed zodiac, primary-star link, disclaimer, and reset action were browser-tested.
@@ -74,6 +74,12 @@ The combined `qa.html` surface displayed the source and live implementation side
 - Finding: the star-detail hero used a generic glowing star icon, so it did not help users recognize the selected star's constellation.
 - Fix: replaced the generic orb with the matching official IAU constellation chart, a bilingual constellation caption, visible source and license attribution, and an orb fallback for network failures.
 - Post-fix evidence: Vega rendered the Lyra chart; searching Sirius switched the chart source to `CMA.gif` and captioned it `大犬座 / Canis Major`.
+
+### Iteration 6
+
+- Finding: location and time actions were split between a top-left place label and a large floating bottom dock, while the location-source pill and search hint repeated already-visible context.
+- Fix: consolidated place and observation time into two compact upper-left buttons; removed the bottom dock, location-source pill, and `当前位置 · 当前时间` search hint. GPS remains available inside the place sheet.
+- Post-fix evidence: mobile and desktop checks show the two top-left controls, an uncluttered search field, and no floating dock.
 
 ## Final result
 

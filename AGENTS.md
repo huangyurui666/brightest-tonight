@@ -15,8 +15,9 @@ When implementing from a selected generated mock, treat that image as the source
 - The public product is a full-viewport responsive web experience. Do not show the simulated phone bezel, device picker, status chrome, custom cursor, or keyboard artwork.
 - Keep a global star search near the top. It must accept Chinese and English star names and calculate the selected star's brightness for the active location, time, altitude, weather, and horizon state.
 - Location selection must include Shenzhen, Beijing, Los Angeles, and New York as quick choices, plus global city-name search that resolves coordinates and time zone before recalculating the sky.
-- Keep the bottom time/location control dock on mobile only. Desktop already exposes time through “换时间” and location through the top bar, so do not show a redundant oversized floating dock there.
+- Keep location and observation time as two compact controls at the upper left on both mobile and desktop. Do not restore the floating bottom time/location dock.
 - In star details, prefer the matching official IAU constellation chart over an abstract star orb. Keep source attribution visible and retain the orb only as an image-load fallback.
+- Keep the top bar and star search visually minimal. Do not show a location-source status pill or a redundant current-location/current-time hint inside the search field.
 
 ## Editing Boundary
 
